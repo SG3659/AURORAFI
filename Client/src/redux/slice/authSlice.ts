@@ -12,10 +12,8 @@ const userSlice = createSlice({
    initialState,
    reducers: {
       setCredentials: (state, action) => {
-         // state.refreshToken = action.payload.refreshToken;
          state.accessToken = action.payload.accessToken;
          state.expiresAt = action.payload.expiresAt;
-         // state.refreshExpireAt = action.payload.refreshExpireAt;
          state.user = action.payload.user;
          state.reportSetting = action.payload.reportSetting;
          state.profilePicture = action.payload.profilePicture
@@ -23,19 +21,15 @@ const userSlice = createSlice({
       updateCredentials: (state, action) => {
          const { expiresAt, user, accessToken, profilePicture } = action.payload;
 
-         // if (refreshToken !== undefined) state.refreshToken = refreshToken;
          if (expiresAt !== undefined) state.expiresAt = expiresAt;
-         // if (refreshExpireAt !== undefined) state.refreshExpireAt = refreshExpireAt;
          if (user !== undefined) state.user = { ...state.user, ...user };
          if (accessToken !== undefined)
             state.reportSetting = { ...state.reportSetting, ...accessToken };
          if (profilePicture !== undefined) state.profilePicture = profilePicture;
       },
       logout: (state) => {
-         // state.refreshToken = null;
          state.accessToken = null;
          state.expiresAt = null;
-         // state.refreshExpireAt = null;
          state.user = null;
          state.reportSetting = null;
          state.profilePicture = null;
