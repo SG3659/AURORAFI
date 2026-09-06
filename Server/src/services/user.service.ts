@@ -10,7 +10,6 @@ export const getUserProfileService = async (userId: string) => {
 
    return user?.omitPassword();
 }
-
 export const updateUserProfileService = async (userId: string, body: updateProfileType, profilePics?: Express.Multer.File) => {
    const user = await UserModel.findById(userId);
    if (!user) {
