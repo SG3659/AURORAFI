@@ -49,16 +49,4 @@ export const accessJwtToken = (
    };
 };
 
-export const refreshJwtToken = (payload: TokenPayload, options?: SignOptsAndSecret): RefreshTokenResult => {
-   const { secret, ...opts } = options || refreshTokenSignOptions;
-   const refreshToken = jwt.sign(payload, secret, {
-      ...defaults,
-      ...opts,
-   });
-   const refreshExpiresAt = (jwt.decode(refreshToken) as JwtPayload)?.exp! * 1000;
-   return {
-      refreshToken,
-      refreshExpiresAt,
-   };
-}
 

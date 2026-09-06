@@ -7,9 +7,7 @@ import ReportSettingModel, { ReportFrequencyEnum } from "../model/report-setting
 import TransactionModel from "../model/transaction.model.js";
 import ReportModel from "../model/report.model.js";
 import { calculateNextReportDate } from "../utils/helper.js"
-import { accessJwtToken, refreshJwtToken } from "../utils/jwt.js"
-import jwt, { type JwtPayload } from "jsonwebtoken"
-import { Env } from "../config/env.config.js";
+import { accessJwtToken} from "../utils/jwt.js"
 import { sendOtpEmail } from "../mailers/otp.mailer.js";
 import { generateOtp } from "../utils/otp-generator.js";
 import type { otpSchemaType } from "../validators/otp.validator.js";
@@ -202,44 +200,6 @@ export const otpVerifyService = async (body: otpSchemaType) => {
       reportSetting
    };
 }
-
-// export const refereshTokenService = async (incomingRefreshToken: string) => {
-//    //veerify refresh token
-//    // 
-//    try {
-//       const decodedToken = jwt.verify(incomingRefreshToken, Env.JWT_REFRESH_SECRET) as JwtPayload;
-//       const user = await UserModel.findById(decodedToken?.userId).select("-password");
-//       if (!user) {
-//          throw new NotFoundException("User not found");
-//       }
-//       if (incomingRefreshToken !== user.resetToken) {
-//          throw new UnauthorizedException("refreshToken mismatch")
-//       }
-//       const { refreshToken, accessToken, tokenExpiresAt, refreshExpiresAt } = await generateRefreshAndAccessToken(user.id)
-//       return { accessToken: accessToken, newRefreshToken: refreshToken }
-
-//    } catch (error) {
-//       throw new InternalServerException("Could not refresh token")
-//    }
-
-// }
-// generate refresh and access token
-// const generateRefreshAndAccessToken = async (userId: string) => {
-//    try {
-//       const user = await UserModel.findById(userId)
-//       if (!user) {
-//          throw new NotFoundException("User not found");
-//       }
-//       const { refreshToken, refreshExpiresAt } = refreshJwtToken({ userId: user.id });
-//       const { accessToken, tokenExpiresAt } = accessJwtToken({ userId: user.id });
-//       user.resetToken = refreshToken;
-//       await user.save({ validateBeforeSave: false });
-//       return { refreshToken, accessToken, tokenExpiresAt, refreshExpiresAt }
-//    }
-//    catch (error) {
-//       throw error;
-//    }
-// }
 
 export const logoutService = async (userId: string) => {
    const user = await UserModel.findById(userId);
