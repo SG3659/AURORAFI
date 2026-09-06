@@ -1,4 +1,4 @@
-import { LogOut, Settings, Moon, Sun } from "lucide-react"
+import { LogOut, Settings } from "lucide-react"
 import {
    Avatar,
    AvatarFallback,
@@ -17,27 +17,34 @@ import {
 import { useAppDispatch } from "@/redux/hook";
 import { logout } from "@/redux/slice/authSlice";
 import { useLogoutMutation } from "@/api/auth/authApi";
+import { useNavigate } from "react-router-dom";
 export function UserNav({
    userName,
    email,
    profilePicture,
-   id
+
 }: {
    userName: string;
    email: string;
    profilePicture: string;
-   id: string;
+
 }) {
+   const navigate = useNavigate();
    const [logoutApi] = useLogoutMutation();
    const dispatch = useAppDispatch();
    const handleLogout = async () => {
       try {
+
          await logoutApi().unwrap();
          dispatch(logout());
+         localStorage.clear();
          window.location.href = "/";
       } catch (error) {
          console.error("Logout failed:", error);
       }
+   }
+   const handleSettingsClick = () => {
+      navigate("/settings");
    }
    return (
       <DropdownMenu>
@@ -72,19 +79,10 @@ export function UserNav({
                   <span className="text-[13px] text-gray-400 font-medium">{email}</span>
                </div>
                <div className="w-6 h-6 cursor-pointer !hover:bg-gray-800 rounded-full flex items-center justify-center">
-                  <Settings className="size-5  text-black   " />
+                  <Settings onClick={handleSettingsClick} className="size-5  text-black   " />
                </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="!bg-gray " />
-            {/* <DropdownMenuGroup >
-               <DropdownMenuItem className=" text-foreground hover:!bg-gray "
-                  onClick={onLogout}
-               >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Log out
-               </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator className="!bg-gray " /> */}
             <DropdownMenuGroup >
                <DropdownMenuItem className=" text-foreground hover:!bg-gray"
                   onClick={handleLogout}

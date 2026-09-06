@@ -1,9 +1,9 @@
 export interface AuthState {
-  refreshToken: string | null;
-  refreshExpireAt: number | null;
+  accessToken: string | null;
   expiresAt: number | null;
   user: User | null;
   reportSetting: ReportSetting | null;
+  profilePicture: string | null;
 }
 
 export interface User {

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useCreateTransactionMutation, useUpdateTransactionMutation, useGetSingleTransactionQuery } from "@/api/transaction/transactionApi"
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -37,8 +37,8 @@ import CurrencyInputField from "../ui/currency-input";
 import { SingleSelector } from "../ui/single-select";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
-
-
+import RecieptScanner from "./reciept-scanner"
+import { AIScanReceiptData } from "@/@types/transaction/transactionTypes";
 
 
 
@@ -92,11 +92,13 @@ const TransactionForm = (props: {
          receiptUrl: "",
       },
    })
+   const [isScanning, setIsScanning] = useState(false);
    const { data, isLoading } = useGetSingleTransactionQuery(
       transactionId || "",
       { skip: !transactionId }
    );
    const editData = data?.transaction;
+   console.log("Edit Data:", editData);
    const [createTransaction, { isLoading: isCreating }] = useCreateTransactionMutation()
    const [updateTransaction, { isLoading: isUpdating }] = useUpdateTransactionMutation()
    useEffect(() => {
@@ -114,6 +116,28 @@ const TransactionForm = (props: {
          });
       }
    }, [editData, form, isEdit, transactionId]);
+   const frequencyOptions = Object.entries(_TransactionFrequency).map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ([_, value]) => ({
+         value: value,
+         label: value.replace("_", " ").toLowerCase(),
+      })
+   );
+   const handleScanComplete = (data: AIScanReceiptData) => {
+      form.reset({
+         ...form.getValues(),
+         title: data.title || "",
+         amount: data.amount.toString(),
+         type: data.type || _TransactionType.EXPENSE,
+         category: data.category?.toLowerCase() || "",
+         date: new Date(data.date),
+         paymentMethod: data.paymentMethod || "",
+         isRecurring: false,
+         frequency: null,
+         description: data.description || "",
+         receiptUrl: data.receiptUrl || "",
+      });
+   };
    const onSubmit = async (values: FormValue) => {
       try {
          const payload = {
@@ -153,19 +177,20 @@ const TransactionForm = (props: {
       }
    }
 
-   const frequencyOptions = Object.entries(_TransactionFrequency).map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ([_, value]) => ({
-         value: value,
-         label: value.replace("_", " ").toLowerCase(),
-      })
-   );
+
    return (
       <div className="relative pb-10 pt-5 px-2.5 flex-1 overflow-y-auto hide-scroll">
          <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-4">
                <div className="space-y-6">
                   {/* Receipt Upload Section */}
+                  {!isEdit && (
+                     <RecieptScanner
+                        loadingChange={isScanning}
+                        onLoadingChange={setIsScanning}
+                        onScanComplete={handleScanComplete}
+                     />
+                  )}
                   {/* Transaction Type */}
                   <FormField
                      control={form.control}
@@ -194,7 +219,7 @@ const TransactionForm = (props: {
                                     id={_TransactionType.INCOME}
                                     className="!border-primary"
                                  />
-                                 Income
+                                 <span>Income</span>
                               </label>
 
                               <label
@@ -213,7 +238,7 @@ const TransactionForm = (props: {
                                     id={_TransactionType.EXPENSE}
                                     className="!border-primary"
                                  />
-                                 Expense
+                                 <span>Expense</span>
                               </label>
                            </RadioGroup>
                            <FormMessage />
@@ -480,3 +505,5 @@ const TransactionForm = (props: {
 }
 
 export default TransactionForm
+
+

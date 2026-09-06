@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Menu } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { PROTECTED_ROUTES } from "@/routes/common/routePath";
 import { cn } from "@/lib/utils";
@@ -12,7 +11,7 @@ import { useTypedSelector } from "@/redux/hook";
 const Navbar = () => {
    const { pathname } = useLocation();
    const { user } = useTypedSelector((state) => state.auth);
-
+   console.log("User in Navbar:", user);
    const [isOpen, setIsOpen] = useState(false);
 
    const routes = [
@@ -28,10 +27,6 @@ const Navbar = () => {
          href: PROTECTED_ROUTES.REPORTS,
          label: "Reports",
       },
-      // {
-      //    href: PROTECTED_ROUTES.SETTINGS,
-      //    label: "Settings",
-      // },
    ];
    return (
       <>
@@ -111,6 +106,7 @@ const Navbar = () => {
                   {/* Right side - User actions */}
                   <div className="flex items-center space-x-4">
                      <UserNav
+
                         userName={user?.name || ""}
                         email={user?.email || ""}
                         profilePicture={user?.profilePicture || ""}
